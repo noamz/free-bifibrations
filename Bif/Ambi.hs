@@ -4,6 +4,7 @@ module Bif.Ambi where
 
 import Data.Semigroup
 import Data.List
+import Data.Maybe
 
 import Bif.Prover
 import Bif.Test
@@ -87,7 +88,17 @@ ambipos :: Int -> Int -> [(AmbiFrm,[AmbiFrm])]
 ambipos n k = [(s,[t | t <- fnk, not $ null (aprove s (idOP k) t)]) | s <- fnk]
   where
     fnk = nubBy (\s t -> altFrm s == altFrm t) $ afrms n k
+
+-- compute F[n,k] in a format suitable for input to Sagemath
+ambipos_sage :: Int -> Int -> ([Int],[(Int,Int)])
+ambipos_sage n k = (els, [(ix s,ix t) | s <- fnk, t <- fnk, not (null (aprove s (idOP k) t))])
+  where
+    fnk = nub (map altFrm $ afrms n k)
+    els = [0..length fnk-1]
+    dict = zip fnk els
+    ix s = fromJust (lookup s dict)
     
+
 tests1 = do
   expected [1,1,2,7,35,226,1787] "A014307" [length $ nubBy (\s t -> altFrm s == altFrm t) $ afrms n 0 | n <- [0..6]]
   expected [1,2,2,2,3,3,7] "partition of F{3,0} by upsets" (sort [length ts | (s,ts) <- ambipos 3 0])
