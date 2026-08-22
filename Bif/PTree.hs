@@ -2,17 +2,18 @@ module Bif.PTree where
 
 import Data.Semigroup
 
+import Bif.Frm
 import Bif.Prover
 import Bif.Test
 
 type TreeFrm = Frm () (Sum Int)
 
 -- prover for tree formulas
-treeFPC :: FPCat () (Sum Int)
+treeFPC :: FPCat () (Sum Int) ()
 treeFPC = FPC { dom = (\_ -> ()), cod = (\_ -> ()),
                 idArr = (\_ -> Sum 0),
                 factLE = factLE ,
-                divLR = divLR , divL = divL , divR = divR }
+                divLR = divLR , divL = divL , divR = divR, cell = cell }
   where
     axiom () (Sum n) () = [() | n == 0]
     domOb _ = ()
@@ -22,9 +23,10 @@ treeFPC = FPC { dom = (\_ -> ()), cod = (\_ -> ()),
     divLR a m b = [-a+m-b | m >= a+b]
     divL  a m   = [-a+m   | m >= a]
     divR    m b = [   m-b | m >= b]
+    cell _ = []
 
 type TSequent = Sequent () (Sum Int)
-type TProof = Proof () (Sum Int) ()
+type TProof = Proof () (Sum Int) () ()
 
 tprove :: TreeFrm -> Int -> TreeFrm -> [TProof]
 tprove s n t = prove treeFPC axiom s (Sum n) t

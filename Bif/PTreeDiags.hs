@@ -3,6 +3,7 @@
 
 module Bif.PTreeDiags where
 
+import Bif.Frm
 import Bif.Prover
 import Bif.PTree
 

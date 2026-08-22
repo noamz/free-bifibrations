@@ -3,6 +3,7 @@
 
 module Bif.AmbiDiags where
 
+import Bif.Frm
 import Bif.Prover
 import Bif.Ambi
 

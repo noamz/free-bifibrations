@@ -6,6 +6,7 @@ import Data.Semigroup
 import Data.List
 import Data.Maybe
 
+import Bif.Frm
 import Bif.Prover
 import Bif.Test
 
@@ -60,12 +61,12 @@ afrms n k
 
 -- prover for ambisimplicial formulas
 
-ambiFPC :: FPCat Int OP
+ambiFPC :: FPCat Int OP ()
 ambiFPC = FPC { idArr = idOP,
                 dom = domOP,
                 cod = codOP,
                 factLE = factLE ,
-                divLR = divLR , divL = divL , divR = divR }
+                divLR = divLR , divL = divL , divR = divR , cell }
   where
     -- the operations below are implemented by inefficient brute force search for now
     factLE (a,b) (c,d) = any (\e -> c == a <> e && b == e <> d) (allOPs m n)
@@ -75,8 +76,9 @@ ambiFPC = FPC { idArr = idOP,
     divLR a f b = [g | g <- allOPs (codOP a) (domOP b), f == a <> g <> b]
     divL  a f   = [g | g <- allOPs (codOP a) (codOP f), f == a <> g]
     divR    f b = [g | g <- allOPs (domOP f) (domOP b), f == g <> b]
+    cell _ = []
 
-type AProof = Proof Int OP ()
+type AProof = Proof Int OP () ()
 aprove :: AmbiFrm -> OP -> AmbiFrm -> [AProof]
 aprove = prove ambiFPC axiom
   where
